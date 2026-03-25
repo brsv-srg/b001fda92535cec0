@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Syrve Theme Comparison</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: Segoe UI, sans-serif; background: #1a1a1a; color: #eee; transition: background 0.3s, color 0.3s; }
+body.light-mode { background: #f0f0f0; color: #222; }
+
+.top-tabs {
+    display: flex; gap: 0; background: #111; border-bottom: 2px solid #333;
+    position: sticky; top: 0; z-index: 100;
+}
+.top-tabs button {
+    flex: 1; padding: 14px 20px; border: none; background: #222; color: #999;
+    font-size: 15px; cursor: pointer; transition: all 0.2s;
+}
+.top-tabs button.active { background: #333; color: #fff; border-bottom: 3px solid #7BAAF0; }
+.top-tabs button:hover:not(.active) { background: #2a2a2a; color: #ccc; }
+body.light-mode .top-tabs { background: #e0e0e0; border-bottom-color: #ccc; }
+body.light-mode .top-tabs button { background: #e8e8e8; color: #666; }
+body.light-mode .top-tabs button.active { background: #fff; color: #222; border-bottom-color: #3B82F6; }
+body.light-mode .top-tabs button:hover:not(.active) { background: #f0f0f0; color: #444; }
+
+.theme-tabs {
+    display: flex; gap: 0; background: #222; border-bottom: 1px solid #444;
+    position: sticky; top: 49px; z-index: 99; flex-wrap: wrap;
+}
+.theme-tabs button {
+    padding: 10px 18px; border: none; background: #2a2a2a; color: #888;
+    font-size: 13px; cursor: pointer; transition: all 0.2s;
+}
+.theme-tabs button.active { background: #444; color: #fff; border-bottom: 2px solid #7BAAF0; }
+.theme-tabs button:hover:not(.active) { background: #333; color: #bbb; }
+body.light-mode .theme-tabs { background: #e8e8e8; border-bottom-color: #ddd; }
+body.light-mode .theme-tabs button { background: #ececec; color: #666; }
+body.light-mode .theme-tabs button.active { background: #fff; color: #222; border-bottom-color: #3B82F6; }
+body.light-mode .theme-tabs button:hover:not(.active) { background: #f4f4f4; color: #444; }
+
+.compare-container { padding: 20px; }
+.compare-pair {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    margin-bottom: 20px;
+}
+.compare-pair .label {
+    text-align: center; font-size: 11px; color: #888; padding: 4px 0;
+    text-transform: uppercase; letter-spacing: 1px;
+}
+.compare-pair img {
+    width: 100%; height: auto; border-radius: 4px;
+    border: 1px solid #333;
+}
+body.light-mode .compare-pair img { border-color: #ccc; }
+body.light-mode .screen-title { color: #999; }
+body.light-mode .compare-pair .label { color: #666; }
+.screen-title {
+    text-align: center; font-size: 13px; color: #666; margin: 20px 0 8px;
+    text-transform: uppercase; letter-spacing: 2px;
+}
+</style>
+</head>
+<body>
+
+<div class="top-tabs" id="topTabs"></div>
+<div class="theme-tabs" id="themeTabs"></div>
+<div class="compare-container" id="content"></div>
+
+<script>
+const BASE = 'images/';
+
+const screens = [
+    { num: '01', name: 'System' },
+    { num: '02', name: 'Table Scheme' },
+    { num: '03', name: 'ByWaiter' },
+    { num: '04', name: 'Order' },
+    { num: '05', name: 'Payment' },
+    { num: '06', name: 'Delivery' },
+];
+
+const darkThemes = [
+    { id: 'DarkBlue', label: 'Dark Blue' },
+    { id: 'DarkOcean', label: 'Dark Ocean' },
+    { id: 'DarkCharcoal', label: 'Dark Charcoal' },
+    { id: 'DarkSage', label: 'Dark Sage' },
+    { id: 'DarkIndigo', label: 'Dark Indigo' },
+];
+
+const lightThemes = [
+    { id: 'LightGreen', label: 'Light Green' },
+    { id: 'LightMint', label: 'Light Mint' },
+    { id: 'LightSand', label: 'Light Sand' },
+    { id: 'LightLevander', label: 'Light Lavender' },
+    { id: 'LightGrey', label: 'Light Gray' },
+];
+
+// File name mapping (handles inconsistent naming)
+const fileMap = {
+    '01-DarkBasic': '01 DarkBasic System',
+    '01-DarkBlue': '01 DarkBlue System',
+    '01-DarkCharcoal': '01 DarkCharcoal System',
+    '01-DarkIndigo': '01 DarkIndigo System',
+    '01-DarkOcean': '01 DarkOcean System',
+    '01-DarkSage': '01 DarkSage System',
+    '01-LightBasic': '01 LightBasic System',
+    '01-LightGreen': '01 LightGreen System',
+    '01-LightGrey': '01 LightGrey System',
+    '01-LightLevander': '01 LightLevander System',
+    '01-LightMint': '01 LightMint System',
+    '01-LightSand': '01 LightSand System',
+    '02-DarkBasic': '02 DarkBasic Table Scheme',
+    '02-DarkBlue': '02 DarkBluel Table Scheme',
+    '02-DarkCharcoal': '02 DarkCharcoal Table Scheme',
+    '02-DarkIndigo': '02 DarkIndigo Table Scheme',
+    '02-DarkOcean': '02 DarkOcean Table Scheme',
+    '02-DarkSage': '02 DarkSage Table Scheme',
+    '02-LightBasic': '02 LightBasic Table Scheme',
+    '02-LightGreen': '02 LightGreen Table Schema',
+    '02-LightGrey': '02 LightGrey Table Scheme',
+    '02-LightLevander': '02 LightLevander Table Scheme',
+    '02-LightMint': '02 LightMint Table Scheme',
+    '02-LightSand': '02 LightSand Table Scheme',
+    '03-DarkBasic': '03 DarkBasic ByWaiter',
+    '03-DarkBlue': '03 DarkBlue ByWaiters',
+    '03-DarkCharcoal': '03 DarkCharcoal ByWaiters',
+    '03-DarkIndigo': '03 DarkIndigo ByWaiters',
+    '03-DarkOcean': '03 DarkOcean ByWaiters',
+    '03-DarkSage': '03 DarkSage ByWaiters',
+    '03-LightBasic': '03 LightBasic ByWaiter',
+    '03-LightGreen': '03 LightGreen ByWaiter',
+    '03-LightGrey': '03 LightGrey ByWaiters',
+    '03-LightLevander': '03 LightLevander ByWaiter',
+    '03-LightMint': '03 LightMint ByWaiter',
+    '03-LightSand': '03 LightSand ByWaiter',
+    '04-DarkBasic': '04 DarkBasic Order',
+    '04-DarkBlue': '04 DarkBlue Order',
+    '04-DarkCharcoal': '04 DarkCharcoal Order',
+    '04-DarkIndigo': '04 DarkIndigo Order',
+    '04-DarkOcean': '04 DarkOcean Order',
+    '04-DarkSage': '04 DarkSage Order',
+    '04-LightBasic': '04 LightBasic Order',
+    '04-LightGreen': '04 LightGreen Order',
+    '04-LightGrey': '04 LightGrey Order',
+    '04-LightLevander': '04 LightLevander Order',
+    '04-LightMint': '04 LightMint Order',
+    '04-LightSand': '04 LightSand Order',
+    '05-DarkBasic': '05 DarkBasic Payment',
+    '05-DarkBlue': '05 DarkBlue Payment',
+    '05-DarkCharcoal': '05 DarkCharcoal Payment',
+    '05-DarkIndigo': '05 DarkIndigo Payment',
+    '05-DarkOcean': '05 DarkOcean Payment',
+    '05-DarkSage': '05 DarkSage Payment',
+    '05-LightBasic': '05 LightBasic Payment',
+    '05-LightGreen': '05 LightGreen Payment',
+    '05-LightGrey': '05 LightGrey Payment',
+    '05-LightLevander': '05 LightLevander Payment',
+    '05-LightMint': '05 LightMint Payment',
+    '05-LightSand': '05 LightSand Payment',
+    '06-DarkBasic': '06 DarkBasic Delivery',
+    '06-DarkBlue': '06 DarkBlue Delivery',
+    '06-DarkCharcoal': '06 DarkCharcoal Delivery',
+    '06-DarkIndigo': '06 DarkIndigo Delivery',
+    '06-DarkOcean': '06 DarkOcean Delivery',
+    '06-DarkSage': '06 DarkSage Delivery',
+    '06-LightBasic': '06 LightBasic Delivery',
+    '06-LightGreen': '06 LightGreen Delivery',
+    '06-LightGrey': '06 LightGrey Delivery',
+    '06-LightLevander': '06 LightLevander Delivery',
+    '06-LightMint': '06 LightMint Delivery',
+    '06-LightSand': '06 LightSand Delivery',
+};
+
+function getImgPath(num, themeId) {
+    const key = num + '-' + themeId;
+    const fname = fileMap[key];
+    if (fname) return BASE + encodeURIComponent(fname) + '.png';
+    return '';
+}
+
+let currentMode = 'dark'; // dark or light
+let currentTheme = 'DarkBlue';
+
+function render() {
+    // Top tabs
+    const topTabs = document.getElementById('topTabs');
+    topTabs.innerHTML = '';
+    ['dark', 'light'].forEach(mode => {
+        const btn = document.createElement('button');
+        btn.textContent = mode === 'dark' ? 'Dark Themes' : 'Light Themes';
+        btn.className = currentMode === mode ? 'active' : '';
+        btn.onclick = () => {
+            currentMode = mode;
+            currentTheme = mode === 'dark' ? darkThemes[0].id : lightThemes[0].id;
+            document.body.className = mode === 'light' ? 'light-mode' : '';
+            render();
+        };
+        topTabs.appendChild(btn);
+    });
+
+    // Theme tabs
+    const themeTabs = document.getElementById('themeTabs');
+    themeTabs.innerHTML = '';
+    const themes = currentMode === 'dark' ? darkThemes : lightThemes;
+    themes.forEach(t => {
+        const btn = document.createElement('button');
+        btn.textContent = t.label;
+        btn.className = currentTheme === t.id ? 'active' : '';
+        btn.onclick = () => { currentTheme = t.id; render(); };
+        themeTabs.appendChild(btn);
+    });
+
+    // Content
+    const content = document.getElementById('content');
+    content.innerHTML = '';
+    const baseId = currentMode === 'dark' ? 'DarkBasic' : 'LightBasic';
+    const baseLabel = currentMode === 'dark' ? 'Default Dark' : 'Default Light';
+
+    screens.forEach(s => {
+        const title = document.createElement('div');
+        title.className = 'screen-title';
+        title.textContent = s.name;
+        content.appendChild(title);
+
+        const pair = document.createElement('div');
+        pair.className = 'compare-pair';
+
+        const leftLabel = document.createElement('div');
+        leftLabel.className = 'label';
+        leftLabel.textContent = baseLabel;
+
+        const rightLabel = document.createElement('div');
+        rightLabel.className = 'label';
+        rightLabel.textContent = themes.find(t => t.id === currentTheme)?.label || currentTheme;
+
+        const leftImg = document.createElement('img');
+        leftImg.src = getImgPath(s.num, baseId);
+        leftImg.alt = baseLabel + ' - ' + s.name;
+
+        const rightImg = document.createElement('img');
+        rightImg.src = getImgPath(s.num, currentTheme);
+        rightImg.alt = currentTheme + ' - ' + s.name;
+
+        const leftDiv = document.createElement('div');
+        leftDiv.appendChild(leftLabel);
+        leftDiv.appendChild(leftImg);
+
+        const rightDiv = document.createElement('div');
+        rightDiv.appendChild(rightLabel);
+        rightDiv.appendChild(rightImg);
+
+        pair.appendChild(leftDiv);
+        pair.appendChild(rightDiv);
+        content.appendChild(pair);
+    });
+}
+
+render();
+</script>
+</body>
+</html>
