@@ -38,6 +38,12 @@ body.light-mode .theme-tabs button { background: #ececec; color: #666; }
 body.light-mode .theme-tabs button.active { background: #fff; color: #222; border-bottom-color: #3B82F6; }
 body.light-mode .theme-tabs button:hover:not(.active) { background: #f4f4f4; color: #444; }
 
+.mode-description {
+    text-align: center; padding: 12px 20px; font-size: 13px; color: #888;
+    font-style: italic;
+}
+body.light-mode .mode-description { color: #888; }
+
 .compare-container { padding: 20px; }
 .compare-pair {
     display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
@@ -85,6 +91,7 @@ body.light-mode .doc-container hr { border-top-color: #ccc; }
 
 <div class="top-tabs" id="topTabs"></div>
 <div class="theme-tabs" id="themeTabs"></div>
+<div class="mode-description" id="modeDescription"></div>
 <div class="compare-container" id="content"></div>
 
 <script>
@@ -201,8 +208,8 @@ function getImgPath(num, themeId) {
     return '';
 }
 
-let currentMode = 'dark'; // dark, light, doc
-let currentTheme = 'DarkBlue';
+let currentMode = 'mixed'; // dark, light, mixed, doc
+let currentTheme = 'MixedBlue';
 
 function simpleMarkdown(md) {
     const lines = md.split('\n');
@@ -251,7 +258,7 @@ function render() {
     // Top tabs
     const topTabs = document.getElementById('topTabs');
     topTabs.innerHTML = '';
-    ['dark', 'light', 'mixed', 'doc'].forEach(mode => {
+    ['mixed', 'dark', 'light', 'doc'].forEach(mode => {
         const btn = document.createElement('button');
         btn.textContent = mode === 'dark' ? 'Dark Themes' : mode === 'light' ? 'Light Themes' : mode === 'mixed' ? 'Mixed Themes' : 'Documentation';
         btn.className = currentMode === mode ? 'active' : '';
@@ -269,6 +276,17 @@ function render() {
     // Theme tabs
     const themeTabs = document.getElementById('themeTabs');
     themeTabs.innerHTML = '';
+
+    const descDiv = document.getElementById('modeDescription');
+    if (currentMode === 'mixed') {
+        descDiv.textContent = 'Универсальные контрастные темы, сочетающие светлые и тёмные цвета';
+    } else if (currentMode === 'dark') {
+        descDiv.textContent = 'Полностью тёмные темы для баров и заведений, работающих ночью или имеющих приглушённый свет внутри';
+    } else if (currentMode === 'light') {
+        descDiv.textContent = 'Максимально светлые темы для хорошо освещённых помещений или использования на террасах';
+    } else {
+        descDiv.textContent = '';
+    }
 
     if (currentMode === 'doc') {
         const content = document.getElementById('content');
