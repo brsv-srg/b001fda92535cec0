@@ -39,8 +39,8 @@ body.light-mode .theme-tabs button.active { background: #fff; color: #222; borde
 body.light-mode .theme-tabs button:hover:not(.active) { background: #f4f4f4; color: #444; }
 
 .mode-description {
-    text-align: center; padding: 12px 20px; font-size: 13px; color: #888;
-    font-style: italic;
+    text-align: center; padding: 14px 20px; font-size: 15px; color: #999;
+    font-weight: 600;
 }
 body.light-mode .mode-description { color: #888; }
 
@@ -279,11 +279,11 @@ function render() {
 
     const descDiv = document.getElementById('modeDescription');
     if (currentMode === 'mixed') {
-        descDiv.textContent = 'Универсальные контрастные темы, сочетающие светлые и тёмные цвета';
+        descDiv.textContent = 'Universal high-contrast themes combining light and dark elements. Follow the same color principles as the default dark theme.';
     } else if (currentMode === 'dark') {
-        descDiv.textContent = 'Полностью тёмные темы для баров и заведений, работающих ночью или имеющих приглушённый свет внутри';
+        descDiv.textContent = 'Fully dark themes for bars and venues operating at night or with dimmed lighting.';
     } else if (currentMode === 'light') {
-        descDiv.textContent = 'Максимально светлые темы для хорошо освещённых помещений или использования на террасах';
+        descDiv.textContent = 'Bright themes for well-lit spaces or outdoor terrace use.';
     } else {
         descDiv.textContent = '';
     }
